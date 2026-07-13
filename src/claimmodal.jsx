@@ -24,12 +24,13 @@ const ENTRY_IDS = {
   name: "516214188",
   email: "408166001",
   address: "1113362729",
+  mobile : "1354627912"
 };
 
 const FORM_ACTION_URL = `https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse`;
 
 export default function ClaimModal({ onClose }) {
-  const [form, setForm] = useState({ name: "", email: "", address: "" });
+  const [form, setForm] = useState({ name: "", email: "", address: "", mobile: "" });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -44,6 +45,8 @@ export default function ClaimModal({ onClose }) {
     if (!form.email.trim()) e.email = "Please enter your email";
     else if (!/^\S+@\S+\.\S+$/.test(form.email)) e.email = "Enter a valid email";
     if (!form.address.trim()) e.address = "Please enter your address";
+    if (!form.mobile.trim()) e.mobile = "Please enter your mobile number";
+    else if (!/^\d{10}$/.test(form.mobile)) e.mobile = "Enter a valid 10-digit number";
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -56,6 +59,7 @@ export default function ClaimModal({ onClose }) {
     data.append(`entry.${ENTRY_IDS.name}`, form.name);
     data.append(`entry.${ENTRY_IDS.email}`, form.email);
     data.append(`entry.${ENTRY_IDS.address}`, form.address);
+    data.append(`entry.${ENTRY_IDS.mobile}`, form.mobile);
 
     try {
       // Google Forms blocks reading the response (CORS), so we submit with
@@ -121,6 +125,16 @@ export default function ClaimModal({ onClose }) {
               {errors.address && (
                 <p className="field-error">{errors.address}</p>
               )}
+
+              <label htmlFor="mobile">Mobile Number</label>
+              <input
+                id="mobile"
+                type="tel"
+                value={form.mobile}
+                onChange={(e) => update("mobile", e.target.value)}
+                placeholder="10-digit mobile number"
+              />
+              {errors.mobile && <p className="field-error">{errors.mobile}</p>}
 
               <button
                 className="submit-btn"
